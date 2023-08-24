@@ -2,7 +2,6 @@ package jamilek
 
 import "fmt"
 import "bufio"
-import "os"
 import "io"
 import "errors"
 import "strings"
