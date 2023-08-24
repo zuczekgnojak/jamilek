@@ -1,0 +1,12 @@
+{
+  key: "dupa" key2: "Kupa"
+  list: [ 1 2 3 "dddd" ]
+  isstupid: true
+  nested: {
+    object: "inner"
+  }
+  objectslist: [
+    { id: "object1" }
+    { id: "object2" }
+  ]
+}
