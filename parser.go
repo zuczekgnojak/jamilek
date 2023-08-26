@@ -2,13 +2,12 @@ package jamilek
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"strconv"
 	"strings"
 )
 
-type NodeParser struct {
+type Parser struct {
 	tokenizer *Tokenizer
 }
 
@@ -36,12 +35,11 @@ func convString(value string) (string, error) {
 	return value[1 : len(value)-1], nil
 }
 
-func (p NodeParser) parseObject() (*Node, error) {
+func (p Parser) parseObject() (*Node, error) {
 	object := make(map[string]*Node)
 
 	token, err := p.tokenizer.Next()
 	if token.Type != ObjectStart {
-		fmt.Println(token, err)
 		return nil, errors.New("expecting object start")
 	}
 	if err != nil {
@@ -62,7 +60,6 @@ func (p NodeParser) parseObject() (*Node, error) {
 			return nil, err
 		}
 		key := strings.Replace(token.Value, ":", "", -1)
-		fmt.Println("key: ", key)
 
 		node, err := p.parseValue()
 		if err != nil {
@@ -73,7 +70,6 @@ func (p NodeParser) parseObject() (*Node, error) {
 	}
 
 	token, err = p.tokenizer.Next()
-	fmt.Println(token, err)
 	if token.Type != ObjectEnd {
 		return nil, errors.New("expecting object end")
 	}
@@ -85,7 +81,7 @@ func (p NodeParser) parseObject() (*Node, error) {
 	return node, nil
 }
 
-func (p NodeParser) parseArray() (*Node, error) {
+func (p Parser) parseArray() (*Node, error) {
 	token, err := p.tokenizer.Next()
 	if err != nil {
 		return nil, err
@@ -96,25 +92,16 @@ func (p NodeParser) parseArray() (*Node, error) {
 	}
 
 	value := make([]*Node, 0)
-	i := 0
 	for {
 		token, err = p.tokenizer.Peek()
-		fmt.Println("PEEKED", token)
 		if token.Type == Value {
-			fmt.Println("parsing in array", token)
 			node, err := p.parseValue()
-			fmt.Println("NODE", node, err)
 			if err != nil {
 				return nil, err
 			}
 			value = append(value, node)
-			// p.tokenizer.Next()
 		} else {
 			break
-		}
-		i += 1
-		if i > 5 {
-			panic("too much looping")
 		}
 	}
 
@@ -128,10 +115,9 @@ func (p NodeParser) parseArray() (*Node, error) {
 	return &Node{Array, value}, nil
 }
 
-func (p NodeParser) parseValue() (*Node, error) {
-
+func (p Parser) parseValue() (*Node, error) {
 	token, err := p.tokenizer.Peek()
-	fmt.Println("parsing a value", token)
+
 	if token.Type == ObjectStart {
 		return p.parseObject()
 	}
@@ -142,7 +128,6 @@ func (p NodeParser) parseValue() (*Node, error) {
 		return nil, errors.New("expecting value")
 	}
 
-	fmt.Println("parseValue NEXT")
 	p.tokenizer.Next()
 
 	if err != nil {
@@ -166,7 +151,7 @@ func (p NodeParser) parseValue() (*Node, error) {
 	return &Node{String, value}, nil
 }
 
-func (p NodeParser) Parse() (*Node, error) {
+func (p Parser) Parse() (*Node, error) {
 	node, err := p.parseObject()
 	if err != nil {
 		return nil, err
@@ -181,7 +166,7 @@ func (p NodeParser) Parse() (*Node, error) {
 	return node, nil
 }
 
-func NewNodeParser(reader io.Reader) NodeParser {
+func NewParser(reader io.Reader) Parser {
 	tokenizer := NewTokenizer(reader)
-	return NodeParser{&tokenizer}
+	return Parser{&tokenizer}
 }

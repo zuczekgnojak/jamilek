@@ -2,7 +2,6 @@ package jamilek
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 )
 
@@ -139,6 +138,5 @@ func (n Node) String() string {
 	if n.nodeType == Bool {
 		return strconv.FormatBool(n.value.(bool))
 	}
-	fmt.Println("error")
 	return "ERROR"
 }
