@@ -1,7 +1,6 @@
 package jamilek
 
 import "fmt"
-import "bufio"
 import "io"
 import "errors"
 import "strings"
@@ -9,66 +8,6 @@ import "strconv"
 
 func Hello() {
 	fmt.Println("The best parser of them all")
-}
-
-type TokenType int64
-
-const (
-	ObjectStart TokenType = 0
-	ObjectEnd   TokenType = 1
-	ArrayStart  TokenType = 2
-	ArrayEnd    TokenType = 3
-	Key         TokenType = 4
-	Value       TokenType = 5
-	EOF         TokenType = 6
-)
-
-type Token struct {
-	Type  TokenType
-	Value string
-}
-
-type Tokenizer struct {
-	scanner *bufio.Scanner
-}
-
-func (t Tokenizer) nextWord() (string, error) {
-	scanning := t.scanner.Scan()
-	if !scanning {
-		return "", t.scanner.Err()
-	}
-
-	return t.scanner.Text(), nil
-}
-
-func (t Tokenizer) NextToken() (Token, error) {
-	word, err := t.nextWord()
-
-	if word == "" {
-		return Token{EOF, ""}, err
-	}
-	if word == "{" {
-		return Token{ObjectStart, word}, nil
-	}
-	if word == "}" {
-		return Token{ObjectEnd, word}, nil
-	}
-	if word == "[" {
-		return Token{ArrayStart, word}, nil
-	}
-	if word == "]" {
-		return Token{ArrayEnd, word}, nil
-	}
-	if word[len(word)-1] == ':' {
-		return Token{Key, word}, nil
-	}
-	return Token{Value, word}, nil
-}
-
-func NewTokenizer(reader io.Reader) Tokenizer {
-	scanner := bufio.NewScanner(reader)
-	scanner.Split(bufio.ScanWords)
-	return Tokenizer{scanner}
 }
 
 type Parser struct {
