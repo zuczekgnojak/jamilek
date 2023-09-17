@@ -11,7 +11,8 @@ const (
 	Object NodeType = iota
 	Array
 	String
-	Number
+	Float
+	Integer
 	Bool
 )
 
@@ -96,19 +97,34 @@ func (n Node) GetBool(path ...string) (bool, error) {
 	return n.value.(bool), nil
 }
 
-func (n Node) GetNumber(path ...string) (float64, error) {
+func (n Node) GetFloat(path ...string) (float64, error) {
 	if len(path) != 0 {
 		node, err := n.Get(path...)
 		if err != nil {
 			return 0, err
 		}
-		return node.GetNumber()
+		return node.GetFloat()
 	}
-	if n.nodeType != Number {
-		return 0, errors.New("invalid number")
+	if n.nodeType != Float {
+		return 0, errors.New("invalid float")
 	}
 	return n.value.(float64), nil
 }
+
+func (n Node) GetInteger(path ...string) (int64, error) {
+	if len(path) != 0 {
+		node, err := n.Get(path...)
+		if err != nil {
+			return 0, err
+		}
+		return node.GetInteger()
+	}
+	if n.nodeType != Integer {
+		return 0, errors.New("invalid int")
+	}
+	return n.value.(int64), nil
+}
+
 
 func (n Node) String() string {
 	if n.nodeType == String {
@@ -132,7 +148,10 @@ func (n Node) String() string {
 		result += " ]"
 		return result
 	}
-	if n.nodeType == Number {
+	if n.nodeType == Integer {
+		return strconv.FormatInt(n.value.(int64), 10)
+	}
+	if n.nodeType == Float {
 		return strconv.FormatFloat(n.value.(float64), 'f', -1, 64)
 	}
 	if n.nodeType == Bool {

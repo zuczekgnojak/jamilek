@@ -27,17 +27,36 @@ type Tokenizer struct {
 	peeked  *Token
 }
 
+func (t Tokenizer) nextWord() (string, error) {
+	isComment := false
+	for {
+		scanning := t.scanner.Scan()
+		if !scanning {
+			return "", t.scanner.Err()
+		}
+
+		word := t.scanner.Text()
+		if word == "/*" {
+			isComment = true
+			continue
+		}
+		if word == "*/" {
+			isComment = false
+			continue
+		}
+		if isComment {
+			continue
+		}
+		return word, nil
+	}
+}
+
 func (t Tokenizer) nextToken() (Token, error) {
-	scanning := t.scanner.Scan()
-	if !scanning {
-		return Token{EOF, ""}, t.scanner.Err()
-	}
-
-	word := t.scanner.Text()
-
+	word, err := t.nextWord()
 	if word == "" {
-		return Token{EOF, ""}, nil
+		return Token{EOF, word}, err
 	}
+
 	if word == "{" {
 		return Token{ObjectStart, word}, nil
 	}

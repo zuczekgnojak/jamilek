@@ -1,0 +1,9 @@
+@startebnf
+title jamilek
+document = [whitespace], object, [whitespace];
+object = '{', whitespace, {key, ':', whitespace, value, whitespace},'}';
+array = '[', whitespace, {value, witespace}, ']';
+key = {a-z | A-Z | 0-9 | '_'}-;
+value = object | array | string | number | true | false;
+whitespace = {space | tab | newline}-;
+@endebnf

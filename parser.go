@@ -22,7 +22,11 @@ func convBool(value string) (bool, error) {
 	return false, errors.New("not a bool")
 }
 
-func convNumber(value string) (float64, error) {
+func convInteger(value string) (int64, error) {
+	return strconv.ParseInt(value, 10, 64)
+}
+
+func convFloat(value string) (float64, error) {
 	return strconv.ParseFloat(value, 64)
 }
 
@@ -139,9 +143,14 @@ func (p Parser) parseValue() (*Node, error) {
 		return &Node{Bool, value}, nil
 	}
 
-	value, err = convNumber(token.Value)
+	value, err = convInteger(token.Value)
 	if err == nil {
-		return &Node{Number, value}, nil
+		return &Node{Integer, value}, nil
+	}
+
+	value, err = convFloat(token.Value)
+	if err == nil {
+		return &Node{Float, value}, nil
 	}
 
 	value, err = convString(token.Value)
