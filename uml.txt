@@ -1,9 +1,12 @@
 @startebnf
 title jamilek
-document = [whitespace], object, [whitespace];
-object = '{', whitespace, {key, ':', whitespace, value, whitespace},'}';
-array = '[', whitespace, {value, witespace}, ']';
+document = {key (* alphabetic order *), ":", space, value, newline}-;
 key = {a-z | A-Z | 0-9 | '_'}-;
-value = object | array | string | number | true | false;
-whitespace = {space | tab | newline}-;
+value = object | array | string | int | float | true | false;
+object = '{', newline, { n * indent, key (* alphabetic order *), ":", space, value, newline}, "n-1" * indent, "}"; 
+array = '[', newline, { n * indent, value, newline}, "n-1" * indent, ']';
+indent = 4 * space;
+string = '"', { "utf-8 codepoint" }, '"';
+int = ["-"], { "0-9" }-;
+float = "0.0" | ["-"], "1-9", ".", ("0-9") | (["-"], "1-9", ".", {"0-9"}-, {"1-9"}-, [E, {1-9}-]);
 @endebnf
