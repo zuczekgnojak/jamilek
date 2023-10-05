@@ -7,7 +7,7 @@ object = '{', "\n", {n * indent, key (* alphabetic order *), ":", space, value, 
 array = '[', "\n", {n * indent, value, "\n"}, "n-1" * indent, ']';
 indent = 2 * space;
 string = '"', { "utf-8 codepoint" }, '"';
-int = ["-"], { "0-9" }-;
+int = ("0") | (["-"], "1-9", { "0-9" });
 float = "0.0" | (["-"], "1-9", ".", ((("0-9"), [exp]) | ({"0-9"}-, "1-9", [exp])));
 exp = "E", ["-"], {"1-9"}-, {"0-9"};
 @endebnf
